@@ -23,11 +23,11 @@ Getting started
 
 You need to configure the example project by editing the config.py file.
 
- 1) First `sign up for a smarterer API application registration <https://smarterercom/api/reg>`_.
- 2) Add your client_id and app_secret to the config gile under SMARTERER_CLIENT_ID and SMARTERER_APP_SECRET. 
- 3) Choose a Smarterer test_id to display a leaderboard for (2 = facebook).
- 3) Create a `smarterer test widget <http://smarterer.com/test-widget/create>`_.
- 4) Copy the embed html from the widget page to the config file under SMARTERER_WIDGET_EMBED.
+1) First `sign up for a smarterer API application registration <https://smarterercom/api/reg>`_.
+2) Add your client_id and app_secret to the config gile under SMARTERER_CLIENT_ID and SMARTERER_APP_SECRET. 
+3) Choose a Smarterer test_id to display a leaderboard for (2 = facebook).
+4) Create a `smarterer test widget <http://smarterer.com/test-widget/create>`_.
+5) Copy the embed html from the widget page to the config file under SMARTERER_WIDGET_EMBED.
 
 Finally start the project:
 
