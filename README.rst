@@ -27,6 +27,7 @@ Getting started
 You need to configure the example project by editing the config.py file.
 
 1) First `sign up for a smarterer API application registration <https://smarterercom/api/reg>`_.
+    a. If your running this app on localhost you must specify ``http://localhost:5000/smarterer_auth_complete`` as the Callback URL. 
 2) Add your client_id and app_secret to the config file under SMARTERER_CLIENT_ID and SMARTERER_APP_SECRET. 
 3) Choose a Smarterer test_id to display a leaderboard for (2 = facebook).
 4) Create a `smarterer test widget <http://smarterer.com/test-widget/create>`_.
