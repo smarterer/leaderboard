@@ -20,6 +20,9 @@ Getting started
     [...]
     Cleaning up...
     (lb_env)$ cp template_config.py config.py
+    (lb_env)$ python util.py init
+    DATABASE TABLES CREATED / DROPPED AND RECREATED
+    (lb_env)$
 
 You need to configure the example project by editing the config.py file.
 
