@@ -32,7 +32,7 @@ Configure the project
  
 1) First you need to `sign up for a Smarterer API application registration <https://smarterercom/api/reg>`_. 
 
-   - If your running this app on localhost you must specify ``http://localhost:5000/smarterer_auth_complete`` as the Callback URL. 
+   - If you're running this app on localhost you must specify ``http://localhost:5000/smarterer_auth_complete`` as the Callback URL. 
 
 2) Add your client_id and app_secret to the config file under SMARTERER_CLIENT_ID and SMARTERER_APP_SECRET. 
 3) Choose a Smarterer test_id to display a leaderboard for (2 = facebook).
