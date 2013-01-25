@@ -29,6 +29,8 @@ Install
 
 Configure the project
 ~~~~~~~~~~~~~~~~~~~~~
+
+You will need to edit the file ``config.py`` and add values for your API registration and embed widget.
  
 1) First you need to `sign up for a Smarterer API application registration <https://smarterercom/api/reg>`_. 
 
