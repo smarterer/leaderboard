@@ -3,6 +3,15 @@ leaderboard: a Smarterer API joint
 
 An example application using the Smarterer API.
 
+This application creates a leaderboard from Smarterer scores for a specific test. Simulated users for
+a theoretical third-party app are 'logged in' (merely by specifying a username) and those users are
+prompted to oauth authenticate with Smarterer. Once a user is authenticated with Smarterer, they are
+presented the Smarterer embed widget to take a specific test on the application site.
+
+The application uses Flask as a web framework and a simple sqlite database to store Smarterer tokens as well
+as badge data for those users. It contains the main flows for conneting with the Smarterer API, oauth 
+authenticating as well as using access tokens to make data requests on behalf of those authenticated users.
+
 Getting started
 ---------------
 
