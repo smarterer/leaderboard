@@ -1,10 +1,13 @@
-leaderboard: a smarterer API joint
+leaderboard: a Smarterer API joint
 ===================================
 
-An example application using the smarterer API.
+An example application using the Smarterer API.
 
 Getting started
 ---------------
+
+Install
+~~~~~~~
 
 .. code-block:: bash
 
@@ -22,18 +25,23 @@ Getting started
     (lb_env)$ cp template_config.py config.py
     (lb_env)$ python util.py init
     DATABASE TABLES CREATED / DROPPED AND RECREATED
-    (lb_env)$
 
-You need to configure the example project by editing the config.py file.
 
-1) First `sign up for a smarterer API application registration <https://smarterercom/api/reg>`_.
-    a. If your running this app on localhost you must specify ``http://localhost:5000/smarterer_auth_complete`` as the Callback URL. 
+Configure the project
+~~~~~~~~~~~~~~~~~~~~~
+ 
+1) First you need to `sign up for a Smarterer API application registration <https://smarterercom/api/reg>`_. 
+
+   - If your running this app on localhost you must specify ``http://localhost:5000/smarterer_auth_complete`` as the Callback URL. 
+
 2) Add your client_id and app_secret to the config file under SMARTERER_CLIENT_ID and SMARTERER_APP_SECRET. 
 3) Choose a Smarterer test_id to display a leaderboard for (2 = facebook).
 4) Create a `smarterer test widget <http://smarterer.com/test-widget/create>`_.
 5) Copy the embed html from the widget page to the config file under SMARTERER_WIDGET_EMBED.
 
-Finally start the project:
+
+Start the web app
+~~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 
