@@ -41,7 +41,7 @@ Configure the project
 
 You will need to edit the file ``config.py`` and add values for your API registration and embed widget.
  
-1) First you need to `sign up for a Smarterer API application registration <https://smarterercom/api/reg>`_. 
+1) First you need to `sign up for a Smarterer API application registration <https://smarterer.com/api/reg>`_. 
 
    - If you're running this app on localhost you must specify ``http://localhost:5000/smarterer_auth_complete`` as the Callback URL. 
 
