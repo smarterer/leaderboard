@@ -11,7 +11,7 @@ def init():
              (username TEXT PRIMARY KEY, access_token text)''')
     c.execute('''DROP TABLE IF EXISTS user_badges''')
     c.execute('''CREATE TABLE user_badges
-     (username TEXT PRIMARY KEY, test_id INTEGER, score REAL, badge_url TEXT)''')
+     (username TEXT PRIMARY KEY, test_url_slug TEXT, score REAL, badge_url TEXT)''')
     conn.commit()
     conn.close()
     print "DATABASE TABLES CREATED / DROPPED AND RECREATED"
@@ -34,12 +34,12 @@ def update_badges(username=None):
             try:
                 c.execute("INSERT INTO user_badges VALUES (?, ?, ?, ?)",
                          (username,
-                          badge[u'quiz'][u'id'],
+                          badge[u'quiz'][u'url_slug'],
                           badge[u'badge'][u'raw_score'],
                           badge[u'badge'][u'image']))
             except sqlite3.IntegrityError:
-                c.execute("UPDATE user_badges SET test_id=?, score=?, badge_url=? WHERE username=?",
-                        (badge[u'quiz'][u'id'],
+                c.execute("UPDATE user_badges SET test_url_slug=?, score=?, badge_url=? WHERE username=?",
+                        (badge[u'quiz'][u'url_slug'],
                          badge[u'badge'][u'raw_score'],
                          badge[u'badge'][u'image'],
                          username))

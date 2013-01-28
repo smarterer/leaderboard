@@ -59,11 +59,11 @@ def leaderboard():
 
     conn = sqlite3.connect('example_leaderboard.db')
     c = conn.cursor()
-    c.execute("SELECT * FROM user_badges WHERE test_id=?", (config.TEST_ID,))
+    c.execute("SELECT * FROM user_badges WHERE test_url_slug=?", (config.TEST_URL_SLUG,))
     d = [{'username': badge_username, 
-        'test_id': test_id,
+        'test_url_slug': test_url_slug,
         'raw_score': raw_score,
-        'badge_image': badge_image} for (badge_username, test_id, raw_score, badge_image) in c.fetchall()]
+        'badge_image': badge_image} for (badge_username, test_url_slug, raw_score, badge_image) in c.fetchall()]
     conn.close()
     badges = sorted(d, key=lambda badge: badge['raw_score'], reverse=True)
     return render_template('leaderboard.html', badges=badges, username=username)
