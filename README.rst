@@ -3,10 +3,18 @@ leaderboard: a Smarterer API joint
 
 An example application using the Smarterer API.
 
+This example application includes the following concepts:
+
+* Oauth authenticating third party users with Smarterer to access their smarterer data.
+* Embedding a Smarterer test widget inside a third-party applicaiton.
+* Making authenticated Smarterer API calls for a user's test scores.
+
 This application creates a leaderboard from Smarterer scores for a specific test. Simulated users for
 a theoretical third-party app are 'logged in' (merely by specifying a username) and those users are
 prompted to oauth authenticate with Smarterer. Once a user is authenticated with Smarterer, they are
 presented the Smarterer embed widget to take a specific test on the application site.
+
+Note: While testing if you authenticate multiple simulated users using the same browser without logging out of a Smarterer account, you will authenticate multiple simulated users with the same Smarterer account.
 
 The application uses Flask as a web framework and a simple sqlite database to store Smarterer tokens as well
 as badge data for those users. It contains the main flows for conneting with the Smarterer API, oauth 
@@ -36,8 +44,8 @@ Install
     DATABASE TABLES CREATED / DROPPED AND RECREATED
 
 
-Configure the project
-~~~~~~~~~~~~~~~~~~~~~
+Configuring the example project
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You will need to copy the ``template_config.py`` file to ``config.py``.
 
@@ -62,3 +70,5 @@ Start the web app
      * Running on http://127.0.0.1:5000/
      * Restarting with reloader
 
+
+Visit 127.0.0.1:5000 in your browser and you should see the sample application.
