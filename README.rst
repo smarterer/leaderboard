@@ -1,7 +1,8 @@
 leaderboard: a Smarterer API joint
 ===================================
 
-An example application using the Smarterer API.
+An example application using the Smarterer API. The application is written in **Python** but is small
+and simple enough that the ideas presented here should easily translate to any language.
 
 This example application includes the following concepts:
 
