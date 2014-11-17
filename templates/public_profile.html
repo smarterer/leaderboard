@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block body %}
+
+<h1>{{ username }}</h1>
+
+{% if leaderboard_badge %}
+  <p>Score on the leaderboard:<br>
+    <img src="{{ leaderboard_badge[3] }}" alg="{{ leaderboard_badge[2] }}"></p>
+{% else %}
+  <p>{{ username }} has not yet taken the test.</p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block body %}
+
+<h1>{{ username }}</h1>
+
+{% if leaderboard_badge %}
+  <p>Your leaderboard score: {{ leaderboard_badge[2] }}</p>
+{% endif %}
+
+{% if not smarterer_result %}
+
+<p>Take this test to participate in the leaderboard.</p>
+
+{% else %}
+
+  {% if smarterer_result.badge.raw_score != leaderboard_badge[2] %}
+  <p>
+    On Smarterer, you've got a score of 
+    <strong>{{ smarterer_result.badge.raw_score }}</strong>
+    for this skill on Smarterer.<br>
+    
+    {% if not leaderboard_badge %}
+    <br><br><strong>You haven't yet shared your score to the leaderboard.</strong><br>
+    <a href="/update">Click here</a> to share it now!
+    {% else %}
+    <a href="/update">Click here</a> update the leaderboard with your new score.
+    {% endif %}
+  </p>
+  {% endif %}
+
+  {% if smarterer_result.state == 'running' %}
+    <p>Take more questions and improve your score!</p>
+  {% endif %}
+{% endif %}
+
+{{ widget_embed |safe}}
+
+<p>Or <a href="/leaderboard">go to the leaderboard</a> to see how you stack up!</p>
+
+{% endblock %}
