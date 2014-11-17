@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% block body %}
 <h1>Welcome user: {{ username }}</h1>
-{% if not is_authorized %}
 <p>Please <a href="{{ oauth_url }}">authorize Leaderboard with Smarterer</a> to
 get started!</p>
-{% else %}
 {% endblock %}
