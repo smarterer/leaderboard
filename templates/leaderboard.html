@@ -3,7 +3,7 @@
 <h2>Leaderboard</h2>
 <ol class="leaderboard">
   {% for badge in badges %}
-    <li{% if badge.username == username %} class="you"{% endif %}><img src="{{ badge.badge_image }}" /> <span>{{ badge.username }}</span>, <span>Raw score: {{ badge.raw_score }}</span></li>
+    <li{% if badge.username == username %} class="you"{% endif %}><img src="{{ badge.badge_image }}" /> <span><a href="/user/{{ badge.username }}">{{ badge.username }}</a></span>, <span>Raw score: {{ badge.raw_score }}</span></li>
   {% endfor %}
 </ol>
 {% endblock %}

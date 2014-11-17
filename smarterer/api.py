@@ -63,11 +63,19 @@ class Smarterer(object):
     # REST API
     ############################################################################
 
-    def badges(self):
+    def badges(self, tests=None):
         '''
         Request the badges for the user associated with self.access_token.
         '''
-        return self._req("badges")
+        
+        path = "badges"
+        if tests:
+            path = path + "?tests=" + ",".join(tests)
+        
+        print(path)
+        
+        return self._req(path)
+
 
     def _req(self, resource_name):
         """
