@@ -6,13 +6,12 @@ and simple enough that the ideas presented here should easily translate to any l
 
 This example application includes the following concepts:
 
-* Oauth authenticating with Smarterer to access their smarterer data.
+* Oauth authenticating with Smarterer to access a user's smarterer data (sign in / sign up with Smarterer)
 * Embedding a Smarterer test widget inside a third-party applicaiton.
 * Making authenticated Smarterer API calls for a user's test scores.
 
-This application creates a leaderboard from Smarterer scores for a specific test. Simulated users for
-a theoretical third-party app are 'logged in' (merely by specifying a username) and those users are
-prompted to oauth authenticate with Smarterer. Once a user is authenticated with Smarterer, they are
+This application creates a leaderboard from Smarterer scores for a specific test. Users sign in and/or sign up
+with the leaderboard app using Smarterer. Once a user is authenticated with Smarterer, they are
 presented the Smarterer embed widget to take a specific test on the application site.
 
 The application uses Flask as a web framework and a simple sqlite database to store Smarterer tokens as well
