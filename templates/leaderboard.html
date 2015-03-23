@@ -23,7 +23,7 @@ We'll use your Smarterer account to keep track of your score.</p>
 <ul class="leaderboard">
 <li class='top-20'>Top 20</li>
 {% for score in scores %}
-<li class="container${' me' if user and score == user.score else '' | n}">
+<li class="container">
 <div class="rank">{{ loop.index }}</div>
 <div class="pic">
   <img src="{{score.user.profile_image}}" height=32, width=32 />
