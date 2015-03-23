@@ -6,7 +6,7 @@ and simple enough that the ideas presented here should easily translate to any l
 
 This example application includes the following concepts:
 
-* Oauth authenticating third party users with Smarterer to access their smarterer data.
+* Oauth authenticating with Smarterer to access their smarterer data.
 * Embedding a Smarterer test widget inside a third-party applicaiton.
 * Making authenticated Smarterer API calls for a user's test scores.
 
@@ -14,8 +14,6 @@ This application creates a leaderboard from Smarterer scores for a specific test
 a theoretical third-party app are 'logged in' (merely by specifying a username) and those users are
 prompted to oauth authenticate with Smarterer. Once a user is authenticated with Smarterer, they are
 presented the Smarterer embed widget to take a specific test on the application site.
-
-Note: While testing if you authenticate multiple simulated users using the same browser without logging out of a Smarterer account, you will authenticate multiple simulated users with the same Smarterer account.
 
 The application uses Flask as a web framework and a simple sqlite database to store Smarterer tokens as well
 as badge data for those users. It contains the main flows for conneting with the Smarterer API, oauth 
@@ -54,12 +52,10 @@ Then edit the file ``config.py`` and add values for your API registration and em
 
 1) First you need to `sign up for a Smarterer API application registration <https://smarterer.com/api/reg>`_. 
 
-   - If you're running this app on localhost you must specify ``http://localhost:5000/smarterer_auth_complete`` as the Callback URL. 
+   - If you're running this app on localhost you must specify ``http://localhost:5000/reg_complete`` as the Callback URL. 
 
 2) Add your client_id and app_secret to the config file under SMARTERER_CLIENT_ID and SMARTERER_APP_SECRET. 
 3) Choose a Smarterer TEST_URL_SLUG for the test you want to display a leaderboard for e.g. facebook, google-search.
-4) Create a `smarterer test widget <http://smarterer.com/test-widget/create>`_.
-5) Copy the embed html from the widget page to the config file under SMARTERER_WIDGET_EMBED.
 
 
 Start the web app
