@@ -1,9 +1,37 @@
-{% extends "base.html" %}
+{% extends "base_header_footer.html" %}
+{% block header %}
+<header class="container-12 centered">
+<h1>80<small>s</small> Trivia Challenge</h1>
+</header>
+{% endblock %}
+
 {% block body %}
-<h2>Leaderboard</h2>
-<ol class="leaderboard">
-  {% for badge in badges %}
-    <li{% if badge.username == username %} class="you"{% endif %}><img src="{{ badge.badge_image }}" /> <span><a href="/user/{{ badge.username }}">{{ badge.username }}</a></span>, <span>Raw score: {{ badge.raw_score }}</span></li>
-  {% endfor %}
-</ol>
+<section class="home-container">
+{% if not user %}
+<p class="signup-notice">
+ <a id="signup" href="https://smarterer.com/oauth/authorize?client_id={{SMARTERER_CLIENT_ID}}">Take the Challenge!</a>
+We'll use your Smarterer account to keep track of your score.</p>
+{% endif %}
+
+{% if user and not user.score %}
+<p class="signup-notice">
+<a href="/80s">Take the Challenge!</a>
+</p>
+{% endif %}
+
+{% if scores %}
+<ul class="leaderboard">
+<li class='top-20'>Top 20</li>
+{% for score in scores %}
+<li class="container${' me' if user and score == user.score else '' | n}">
+<div class="rank">{{ loop.index }}</div>
+<div class="pic">
+  <img src="{{score.user.profile_image}}" height=32, width=32 />
+</div>
+<div class="name">{{ score.user.display_name }}</div><div class="score">{{ score.display_value }}</div>
+</li>
+{% endfor %}
+</ul>
+{% endif %}
+</section>
 {% endblock %}

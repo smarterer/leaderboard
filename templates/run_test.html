@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block javascript %}
+{{ super() }}
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="https://smarterer.com/js/sdk_v0.1a.min.js"></script>
+<script>
+Smarterer.init_sdk();
+$(document).ready(function() {
+    Smarterer.bindEvent(window.document.body, 'test:done', function(e) {
+        window.location.href = "/sync";
+    })
+});
+</script>
+{% endblock %}
+{% block body %}
+<iframe id="me" style="position: absolute; height: 100%; width: 100%;" src="http://smarterer.com/tests/80s-trivia/run?embed=true"></iframe>
+{% endblock %}

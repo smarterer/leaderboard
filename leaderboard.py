@@ -1,44 +1,205 @@
 from flask import (Flask, session, redirect, url_for, escape,
-                   request, render_template)
+                   request, render_template, send_from_directory)
+from flask.ext.sqlalchemy import SQLAlchemy
+
 import smarterer.api
 import sqlite3
-import util
 import config
+import requests
+import sqlalchemy
 
-app = Flask(__name__)
+
+app = Flask(__name__, static_url_path='')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///example_leaderboard.db'
+db = SQLAlchemy(app)
+
+class Score(db.Model):
+    __tablename__ = "scores"
+    id = db.Column(db.Integer, nullable=False, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user = db.relationship("User", backref=db.backref("score", uselist=False))
+    # quiz_id = db.Column(db.Integer)
+    _value = db.Column("value", db.Integer)
+    date_created = db.Column(db.TIMESTAMP,
+                                 default=db.func.current_timestamp())
+
+    @property
+    def display_value(self):
+        '''Return the score with additional precision.'''
+        return int(round(self.value))
+
+    @property
+    def value(self):
+        '''Return the score with additional precision.'''
+        return self._value / 1000.0
+
+    @value.setter
+    def value(self, value):
+        '''Set the score, convert to an int at 1000x.'''
+        self._value = int(round(value * 1000.0))
+
+    def __repr__(self):
+        return "<Score(id='{0}', quiz='{1}', score='{2}')>".format(self.id,
+                                                     self.quiz_id, self.value)
+
+
+class User(db.Model):
+    __tablename__ = "users"
+    id = db.Column(db.Integer, nullable=False, primary_key=True)
+    username = db.Column(db.Unicode(40), unique=True, key='username')
+    email = db.Column(db.Unicode(255), unique=True, key='email')
+    first_name = db.Column(db.Unicode(255))
+    last_name = db.Column(db.Unicode(255))
+    profile_image = db.Column(db.Unicode(511))
+    access_token = db.Column(db.Unicode(40), unique=True)
+    date_created = db.Column(db.TIMESTAMP,
+                                 default=db.func.current_timestamp())
+    last_sync = db.Column(db.TIMESTAMP,
+                                 default=db.func.current_timestamp())
+    can_login = True
+
+    @property
+    def display_name(self):
+        if self.first_name and self.last_name:
+            return " ".join([self.first_name, self.last_name])
+        elif self.first_name:
+            return self.first_name
+        else:
+            return self.username
+
+    def __repr__(self):
+        return "<User('%s', '%s')>" % (self.id, self.username)
+
 
 @app.route("/")
 def index():
     '''
     Front page.
-    
+
     Either a welcome landing page with a login link or redirect to profile page.
     '''
-    
-    if 'username' in session:
-        return redirect(url_for('profile', username=session['username']))
+    if "username" in session:
+        username = escape(session['username'])
+        user = db.session.query(User).filter_by(username=username).one()
     else:
-        api = smarterer.api.Smarterer(client_id=config.SMARTERER_CLIENT_ID)
-        oauth_url = api.authorize_url()
-        return render_template('welcome.html', username=None,
-                                            oauth_url=oauth_url,
-                                            authd=False,
-                                            widget_embed=config.SMARTERER_WIDGET_EMBED)
+        user = None
+    scores = (db.session.query(Score).order_by(db.desc(Score._value)).limit(20).
+                      all())
+    return render_template('leaderboard.html',
+                             user=user, scores=scores,
+                             SMARTERER_CLIENT_ID=config.SMARTERER_CLIENT_ID)
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
+@app.route('/reg_complete', methods=['GET'])
+def smarterer_callback():
     '''
-    Login: show or handle the login form.
+    Create a new user
     '''
-    if request.method != 'POST':
-        # just render the login form for a GET request.
-        return render_template('login.html')
+    auth_code = request.args.get("code") or 'NO CODE'
+
+    params = {'client_id': config.SMARTERER_CLIENT_ID,
+              'client_secret': config.SMARTERER_APP_SECRET,
+              'code': auth_code,
+              'grant_type': 'authorization_code'
+              }
+    resp = requests.get('https://smarterer.com/oauth/access_token',
+                        params=params,
+                        verify=False)
+
+    token = resp.json().get('access_token')
+    if token:
+        params = {'access_token': token}
+        resp = requests.get('https://smarterer.com/api/users/me',
+                            params=params, verify=False)
+        prof_data = resp.json()
+        try:
+            user = db.session.query(User).filter_by(username=prof_data['username']).one()
+        except sqlalchemy.orm.exc.NoResultFound:
+            user_keys = ("username", "email", "first_name", "last_name", "profile_image")
+            params = dict([(key, value) for key, value in prof_data.items() if key in user_keys and value is not None])
+            params['access_token'] = token
+            user = User(**params)
+            db.session.add(user)
+            db.session.commit()
+        session['username'] = user.username
+        return redirect(url_for('sync'))
+
     else:
-        # handle the login: for this example just naively save the username
-        # in the session and then redirect.
-        session['username'] = request.form['username']
         return redirect(url_for('index'))
+
+
+
+def sync_scores(user):
+    params = {'access_token': user.access_token,
+              'tests': '80s-trivia'}
+    resp = requests.get('https://smarterer.com/api/badges',
+                        params=params,
+                        verify=False)
+    if resp.status_code != 200:
+        return False
+    score_data = resp.json()
+    if score_data.get('badges', []):
+        raw_score = score_data['badges'][0]['badge']['raw_score']
+    else:
+        return False
+
+    if user.score:
+        user.score.value = raw_score
+    else:
+        user.score = Score(value=raw_score)
+    return True
+
+
+def sync_profile(user):
+    params = {'access_token': user.access_token}
+    resp = requests.get('https://smarterer.com/api/users/me',
+                        params=params, verify=False)
+    if resp.status_code != 200:
+        return False
+    prof_data = resp.json()
+    user_keys = ("username", "first_name", "last_name", "profile_image")
+    for key in user_keys:
+        if prof_data.get(key, None) is not None:
+            setattr(user, key, prof_data[key])
+
+
+@app.route('/sync')
+def sync():
+    '''
+    sync profiles
+    '''
+    if "username" in session:
+        username = escape(session['username'])
+        user = db.session.query(User).filter_by(username=username).one()
+    if user:
+        sync_scores(user)
+        sync_profile(user)
+        db.session.commit()
+    return redirect(url_for('index'))
+
+
+@app.route('/80s')
+def test_show():
+    if "username" in session:
+            username = escape(session['username'])
+            user = db.session.query(User).filter_by(username=username).one()
+    else:
+        user = None
+    return render_template('show_test.html',
+                         user=user)
+
+@app.route('/80s/run')
+def run():
+    if "username" in session:
+            username = escape(session['username'])
+            user = db.session.query(User).filter_by(username=username).one()
+    else:
+        user = None
+    if not user:
+        return redirect(url_for('index'))
+
+    return render_template('run_test.html',
+                            user=user)
 
 
 @app.route('/logout')
@@ -50,187 +211,17 @@ def logout():
     return redirect(url_for('index'))
 
 
-@app.route('/user/<username>')
-def profile(username):
-    '''
-    Profile page /user/<username>
-    
-    Grab the stored Leaderboard score info for <username> from the db.
+@app.route('/js/<path:path>')
+def send_js(path):
+    return send_from_directory('js', path)
 
-    If <username> is not the currently logged in user, then just use that info
-    to render a public profile page.
+@app.route('/css/<path:path>')
+def send_css(path):
+    return send_from_directory('css', path)
 
-    If <username> IS the currently logged in user:
-        1. Check if we've saved an access token saved for the user.
-        2. If not, then ask the her to authorize on Smarterer.
-        3. Otherwise, pull down her most up to date score from Smarterer using 
-           the /badges REST endpoint.
-        4. Give the user a way to update the leaderboard with their latest score
-           if it's different. (See profile.html and the update() function.)        
-    '''
-
-    name = escape(username)
-    conn = sqlite3.connect('example_leaderboard.db')
-    
-    # Look in our db for stored Leaderboard test result for the owner of this
-    # profile.
-    c = conn.cursor()
-    c.execute("SELECT * FROM user_badges WHERE test_url_slug=? AND username=?",
-                                                        (config.TEST_URL_SLUG,
-                                                        name))
-    leaderboard_badge = c.fetchone()
-    
-    # Is this the profile of the currently logged-in user?
-    if session.get('username') != username:
-        # If not, then we're done: it's a simple profile page.
-        conn.close()
-        return render_template('public_profile.html', username=name,
-                                            leaderboard_badge=leaderboard_badge)
-
-    #
-    # Otherwise, it's the current user's profile page:
-    #
-    
-    # Get the stored access token for the owner of this profile.
-    c = conn.cursor()
-    c.execute("SELECT access_token FROM user_tokens WHERE username=?", (name,))
-    access_token = c.fetchone()
-    conn.close()
-
-    
-    # If we don't have an access token, then ask them to authorize
-    # with Smarterer.
-    if not access_token:
-        return please_authorize(name)
-
-    # On the other hand, if the logged in user own this profile and they HAVE
-    # authorized, then grab their most up-to-date test results (if any) from
-    # Smarterer.
-    s = smarterer.api.Smarterer(client_id=config.SMARTERER_CLIENT_ID,
-                              client_secret=config.SMARTERER_APP_SECRET,
-                              verify=False,
-                              access_token=access_token)
-    
-    data = s.badges((config.TEST_URL_SLUG,))
-    
-    smarterer_result = None
-    if len(data['badges']) > 0:
-        smarterer_result = data['badges'][0]
-        
-    return render_template('profile.html', username=name,
-                                        smarterer_result=smarterer_result,
-                                        leaderboard_badge=leaderboard_badge,
-                                        widget_embed=config.SMARTERER_WIDGET_EMBED
-                                        )
-
-
-def please_authorize(name):
-    '''
-    We need to ask user to authorize with Smarterer.
-    Build the OAuth URL for the Authorize with Smarterer Link.
-    '''
-    api = smarterer.api.Smarterer(client_id=config.SMARTERER_CLIENT_ID)
-    oauth_url = api.authorize_url()
-
-    return render_template('please_authorize.html', username=name,
-                                        oauth_url=oauth_url)
-
-@app.route('/smarterer_auth_complete')
-def auth_complete():
-    '''
-    This is the OAuth callback handler.  After we send the user to Smarterer
-    and s/he authorizes access, Smarterer redirects her/him back to this URL
-    with a temporary `code` query parameter, which we use to get the longer-
-    term access token for this user that we'll save in the db so that our app
-    can continue to access the user's Smarterer data.
-        
-    (Recall that we configured this particular URL when we registered the
-    Leaderboard app with Smarterer.)
-    '''
-    username = session.get('username', None)
-    if not username:
-        return redirect(url_for('login'))
-    api = smarterer.api.Smarterer(client_id=config.SMARTERER_CLIENT_ID,
-                                  client_secret=config.SMARTERER_APP_SECRET,
-                                  verify=False)
-    access_token = api.get_access_token(code=request.args.get('code', ''))
-
-    conn = sqlite3.connect('example_leaderboard.db')
-    c = conn.cursor()
-    try:
-        c.execute("INSERT INTO user_tokens VALUES (?, ?)", (username, access_token))
-    except sqlite3.IntegrityError:
-        c.execute("UPDATE user_tokens SET access_token=? WHERE username=?", (access_token, username))
-    conn.commit()
-    conn.close()
-    return redirect(url_for('index'))
-    
-    
-@app.route('/update')
-def update():
-    '''
-    Respond to the user's request to post her most recent Smarterer score to
-    the leaderboard.
-    '''
-
-    username = escape(session['username'])
-    if not username:
-        return redirect(url_for('index'))
-        
-    conn = sqlite3.connect('example_leaderboard.db')
-    c = conn.cursor()
-    c.execute("SELECT * FROM user_tokens WHERE username=?", (username,))
-    access_token = c.fetchone()
-
-    s = smarterer.api.Smarterer(client_id=config.SMARTERER_CLIENT_ID,
-                              client_secret=config.SMARTERER_APP_SECRET,
-                              verify=False,
-                              access_token=access_token)
-
-    data = s.badges((config.TEST_URL_SLUG,))
-    for badge in data['badges']:
-        try:
-            c.execute("INSERT INTO user_badges VALUES (?, ?, ?, ?)",
-                     (username,
-                      badge[u'quiz'][u'url_slug'],
-                      badge[u'badge'][u'raw_score'],
-                      badge[u'badge'][u'image']))
-        except sqlite3.IntegrityError:
-            c.execute("UPDATE user_badges SET test_url_slug=?, score=?, badge_url=? WHERE username=?",
-                    (badge[u'quiz'][u'url_slug'],
-                     badge[u'badge'][u'raw_score'],
-                     badge[u'badge'][u'image'],
-                     username))
-    conn.commit()
-    conn.close()
-
-    return redirect(url_for('leaderboard'))
-
-
-@app.route('/leaderboard')
-def leaderboard():
-    '''
-    The leaderboard.
-
-    If there's a logged in user, first ensure that her/his score has been saved 
-    (or updated) in the database.
-
-    Then pull the stored user test scores from the db and sort them.
-    '''
-
-    # Pull scores from db and render the sorted list.
-    conn = sqlite3.connect('example_leaderboard.db')
-    c = conn.cursor()
-    c.execute("SELECT * FROM user_badges WHERE test_url_slug=?", (config.TEST_URL_SLUG,))
-    d = [{'username': badge_username, 
-        'test_url_slug': test_url_slug,
-        'raw_score': raw_score,
-        'badge_image': badge_image} for (badge_username, test_url_slug, raw_score, badge_image) in c.fetchall()]
-    conn.close()
-    badges = sorted(d, key=lambda badge: badge['raw_score'], reverse=True)
-    return render_template('leaderboard.html', badges=badges, username=session.get('username'))
-
-
+@app.route('/img/<path:path>')
+def send_img(path):
+    return send_from_directory('img', path)
 
 
 # set the secret key.  keep this really secret:

@@ -1,0 +1,103 @@
+
+.container-12, .container-16
+{
+    margin-left:auto;
+    margin-right:auto;
+    width:980px;
+}
+
+.container {
+    width: auto;
+}
+
+.container:after, .container-12:after, .container-16:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+
+[class^='grid']
+{
+    display:block;
+    position:relative;
+    float:left;
+}
+
+[class^='container'], [class^='grid'], [class^='grid']:after, [class^='grid']:before {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+/*.padded {
+    padding: 0 22px;
+}
+*/
+/* Apply gutter padding to grid elements except for the last child */
+[class^='grid'] {
+  padding-left: 20px;
+}
+
+/* first-of-type is safer but not supported in IE8 */
+/*[class^='grid']:first-of-type {
+  padding-left: 0;
+}*/
+
+[class^='grid']:first-child {
+  padding-left: 0;
+}
+
+
+
+.grid1 {
+    width: 8.33%;
+}
+
+.grid2 {
+    width: 16.66%;
+}
+
+.grid3 {
+    width: 25.00%;
+}
+
+.grid4 {
+    width: 33.33%;
+}
+
+.grid5 {
+    width: 41.66%;
+}
+
+.grid6 {
+    width: 50.00%;
+}
+
+.grid7 {
+    width: 58.33%;
+}
+
+.grid8 {
+    width: 66.66%;
+}
+
+.grid9 {
+    width: 75.00%;
+}
+
+.grid10 {
+    width: 83.33%;
+}
+
+.grid11 {
+    width: 91.66%;
+}
+
+.grid12 {
+    width: 100.00%;
+}
+
+.nopad {
+    padding: 0;
+}

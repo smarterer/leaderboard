@@ -1,0 +1,232 @@
+body {
+    font-size: 14px;
+    background: #1f3649;
+    font-weight: 400;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+h1 {
+    text-transform: uppercase;
+    color: #38b9fa;
+    font-weight: 900;
+    font-size: 36px;
+    padding: 110px 0 40px 0;
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    background: #fff url(../img/smarterer.jpg) center 40px no-repeat;
+}
+
+h1 small {
+    font-size: 24px;
+}
+
+h2 {
+    font-weight: bold;
+}
+
+strong {
+    font-weight: bold;
+}
+
+em {
+    font-style: italic;
+}
+
+p {
+    margin: 1em 0;
+}
+
+@keyframes spaceout {
+        0%   {
+            letter-spacing: 25px;
+
+        }
+        100% {
+            letter-spacing: -3px;
+          }
+    }
+
+@-o-keyframes spaceout {
+        0%   {
+            letter-spacing: 25px;
+
+        }
+        100% {
+            letter-spacing: -3px;
+          }
+    }
+    @-moz-keyframes spaceout {
+        0%   {
+            letter-spacing: 25px;
+
+        }
+        100% {
+            letter-spacing: -3px;
+          }
+    }
+    @-webkit-keyframes spaceout {
+        0%   {
+            letter-spacing: 25px;
+
+        }
+        100% {
+            letter-spacing: -3px;
+          }
+    }
+
+h1.fancy_animated_header {
+    animation:spaceout           1.2s;
+    -moz-animation:spaceout      1.2s; /* Firefox */
+    -webkit-animation:spaceout   1.2s; /* Safari and Chrome */
+    -o-animation:spaceout        1.2s;  /* Opera */
+}
+
+.centered {
+    text-align: center;
+}
+
+
+.status_bar {
+
+}
+
+.leaderboard {
+    width: 440px;
+    margin: 20px 0 0 0;
+}
+
+.leaderboard li {
+    padding: 10px 0 10px 76px;
+    min-height: 32px;
+    position: relative;
+}
+
+.leaderboard li.top-20 {
+    padding: 0 0 10px 0;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 24px;
+    font-weight: 900;
+}
+
+.rank {
+    position: absolute;
+    left: 10px;
+    top: 18px;
+    font-size: 24px;
+    font-weight: 900;
+    color: rgba(0,0,0,.25);
+}
+
+.pic {
+    position: absolute;
+    left: 35px;
+    top: 10px;
+}
+
+.pic img {
+    border-radius: 2px;
+}
+
+.name {
+    height: 32px;
+    color: #435865;
+    line-height: 32px;
+}
+
+.score {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    height: 32px;
+    line-height: 32px;
+    color: #697c8a;
+}
+
+.leaderboard li:nth-child(even) {
+    background: #eef3f6;
+}
+
+.me {
+    outline: 2px solid #38b9fa;
+    z-index: 2;
+}
+
+header.container-12.centered {
+    background: #fff;
+    width: 100%;
+    margin: 0 0 40px 0;
+    border-bottom: 5px solid #38b9fa;
+}
+
+p.signup-notice {
+    text-align: center;
+    color: #bbb;
+    font-size: 12px;
+    padding: 0 0 20px 0;
+    border-bottom: 1px solid #eee;
+    margin: 7px 0 0 0;
+}
+
+a {
+    background: #fc9841;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+    font-size: 14px;
+    border-radius: 3px;
+    height: 50px;
+    line-height: 50px;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 900;
+    width: 440px;
+}
+
+.home-container {
+    width: 480px;
+    margin: 0 auto 50px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 5px;
+}
+
+.home-container h2 {
+    font-size: 15px;
+}
+
+.home-container p {
+    color: #888;
+    line-height: 18px;
+    margin: 5px 0 20px 0;
+}
+
+.logged-in {
+    position: absolute;
+    right: 0;
+    top: 5px;
+    z-index: 2;
+    font-size: 12px;
+    color: #bbb;
+}
+
+.logged-in a {
+
+    height: 20px;
+    width: auto;
+    background: #dee8ed;
+    padding: 0 5px;
+    font-size: 10px;
+    border-radius: 2px;
+    margin: 0 3px;
+    color: #435865;
+    line-height: 20px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.me img {
+/*    height: 64px;
+    width: 64px;
+*/}

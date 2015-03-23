@@ -12,7 +12,27 @@
 {% endblock %}
 </head>
 <body>
-    {% block body %}
+{% block status %}
+<div class="logged-in">
+    {% if user %}
+        Logged In: {{user.username}}
+        <a href="/logout">logout</a>
+    {% endif %}
+</div>
+{% endblock %}
+{% block header %}
+    <header>
+    {%  block logo %}
     {% endblock %}
+    </header>
+{% endblock %}
+<section>
+{% block body %}
+{% endblock %}
+</section>
+{% block before_footer %}
+{% endblock %}
+{% block footer %}
+{% endblock %}
 </body>
 </html>
